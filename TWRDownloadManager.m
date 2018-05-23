@@ -8,7 +8,9 @@
 
 #import "TWRDownloadManager.h"
 #import "TWRDownloadObject.h"
+#if TARGET_OS_IPHONE
 #import <UIKit/UIKit.h>
+#endif
 
 @interface TWRDownloadManager () <NSURLSessionDelegate, NSURLSessionDownloadDelegate>
 
@@ -39,11 +41,19 @@
         // Background session
         NSURLSessionConfiguration *backgroundConfiguration = nil;
 
+#ifdef TARGET_OS_IPHONE
+#ifndef TARGET_OS_WATCH
         if (floor(NSFoundationVersionNumber) > NSFoundationVersionNumber_iOS_7_1) {
             backgroundConfiguration = [NSURLSessionConfiguration backgroundSessionConfigurationWithIdentifier:[[NSBundle mainBundle] bundleIdentifier]];
         } else {
+#endif
+#endif
             backgroundConfiguration = [NSURLSessionConfiguration backgroundSessionConfiguration:@"re.touchwa.downloadmanager"];
+#ifdef TARGET_OS_IPHONE
+#ifndef TARGET_OS_WATCH
         }
+#endif
+#endif
 
         self.backgroundSession = [NSURLSession sessionWithConfiguration:backgroundConfiguration delegate:self delegateQueue:nil];
 
@@ -280,10 +290,14 @@ totalBytesExpectedToWrite:(int64_t)totalBytesExpectedToWrite {
     [self.downloads removeObjectForKey:fileIdentifier];
 
     dispatch_async(dispatch_get_main_queue(), ^{
+#ifdef TARGET_OS_IPHONE
+#ifndef TARGET_OS_WATCH
         // Show a local notification when download is over.
         UILocalNotification *localNotification = [[UILocalNotification alloc] init];
         localNotification.alertBody = [NSString stringWithFormat:@"%@ has been downloaded", download.friendlyName];
         [[UIApplication sharedApplication] presentLocalNotificationNow:localNotification];
+#endif
+#endif
     });
 }
 
@@ -486,10 +500,14 @@ totalBytesExpectedToWrite:(int64_t)totalBytesExpectedToWrite {
                     // Call the completion handler to tell the system that there are no other background transfers.
                     completionHandler();
 
+#ifdef TARGET_OS_IPHONE
+#ifndef TARGET_OS_WATCH
                     // Show a local notification when all downloads are over.
                     UILocalNotification *localNotification = [[UILocalNotification alloc] init];
                     localNotification.alertBody = @"All files have been downloaded!";
                     [[UIApplication sharedApplication] presentLocalNotificationNow:localNotification];
+#endif
+#endif
                 }];
 
                 // Make nil the backgroundTransferCompletionHandler.
