@@ -21,7 +21,11 @@ Pod::Spec.new do |s|
     :tag => "1.2.0"
   }
 
-  s.platform     = :ios, '7.0'
+  s.ios.deployment_target = '7.0'
+  s.osx.deployment_target = '10.8'
+  s.watchos.deployment_target = '3.0'
+  s.tvos.deployment_target = '10.0'  
+  
   s.source_files = '*.{h,m}'
   s.requires_arc = true
 
