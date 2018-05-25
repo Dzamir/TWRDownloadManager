@@ -67,7 +67,6 @@
 - (void)downloadFileForURL:(NSString *)urlString
                   withName:(NSString *)fileName
           inDirectoryNamed:(NSString *)directory
-              friendlyName:(NSString *)friendlyName
              progressBlock:(void(^)(CGFloat progress))progressBlock
              remainingTime:(void(^)(NSUInteger seconds))remainingTimeBlock
            completionBlock:(void(^)(BOOL completed))completionBlock
@@ -76,11 +75,7 @@
     if (!fileName) {
         fileName = [urlString lastPathComponent];
     }
-
-    if (!friendlyName) {
-        friendlyName = fileName;
-    }
-
+    
     if (![self fileDownloadCompletedForUrl:urlString]) {
         NSLog(@"File is downloading!");
     } else if (![self fileExistsWithName:fileName inDirectory:directory]) {
@@ -94,23 +89,12 @@
         TWRDownloadObject *downloadObject = [[TWRDownloadObject alloc] initWithDownloadTask:downloadTask progressBlock:progressBlock remainingTime:remainingTimeBlock completionBlock:completionBlock];
         downloadObject.startDate = [NSDate date];
         downloadObject.fileName = fileName;
-        downloadObject.friendlyName = friendlyName;
         downloadObject.directoryName = directory;
         [self.downloads addEntriesFromDictionary:@{urlString:downloadObject}];
         [downloadTask resume];
     } else {
         NSLog(@"File already exists!");
     }
-}
-
-- (void)downloadFileForURL:(NSString *)urlString
-                  withName:(NSString *)fileName
-          inDirectoryNamed:(NSString *)directory
-             progressBlock:(void(^)(CGFloat progress))progressBlock
-             remainingTime:(void(^)(NSUInteger seconds))remainingTimeBlock
-           completionBlock:(void(^)(BOOL completed))completionBlock
-      enableBackgroundMode:(BOOL)backgroundMode {
-
 }
 
 - (void)downloadFileForURL:(NSString *)url
@@ -149,11 +133,11 @@
            completionBlock:(void(^)(BOOL completed))completionBlock
       enableBackgroundMode:(BOOL)backgroundMode {
     [self downloadFileForURL:urlString
-                   withName:fileName
-           inDirectoryNamed:directory
-              progressBlock:progressBlock
-              remainingTime:nil
-            completionBlock:completionBlock
+                    withName:fileName
+            inDirectoryNamed:directory
+               progressBlock:progressBlock
+               remainingTime:nil
+             completionBlock:completionBlock
         enableBackgroundMode:backgroundMode];
 }
 
